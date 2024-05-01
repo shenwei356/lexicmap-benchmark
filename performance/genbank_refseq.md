@@ -32,24 +32,24 @@ Searching
     done
 
     # hits
-    ls b.*.tsv | rush -k 'echo -ne "{}\t" ; csvtk head -n 1 -t {} | csvtk cut -t -f hits -U;'
-    b.gene_E_coli_16S.fasta.lexicmap.tsv    832161
-    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       11773
-    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    17793
+    ls b.*.lexicmap.tsv | rush -k 'echo -ne "{}\t" ; csvtk head -n 1 -t {} | csvtk cut -t -f hits -U;'
+    b.gene_E_coli_16S.fasta.lexicmap.tsv    1875260
+    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       16556
+    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    494860
 
     # resource
     ls b.*.lexicmap.tsv.log | rush -k 'echo {} ; tail -n 3 {};'
     b.gene_E_coli_16S.fasta.lexicmap.tsv.log
-    elapsed time: 21m:54s
-    peak rss: 8.15 GB
+    elapsed time: 8m:29s
+    peak rss: 10.79 GB
 
     b.gene_E_faecalis_SecY.fasta.lexicmap.tsv.log
-    elapsed time: 16.224s
+    elapsed time: 6.216s
     peak rss: 1.26 GB
 
     b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv.log
-    elapsed time: 5m:34s
-    peak rss: 12.46 GB
+    elapsed time: 4m:08s
+    peak rss: 14.57 GB
 
 ## BLASTN
 

@@ -36,7 +36,6 @@ Searching
     b.gene_E_faecalis_SecY.fasta.lexicmap.tsv      7936
     b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv   10875
 
-
     # resource
     ls b.*.lexicmap.tsv.log | rush -k 'echo {} ; tail -n 3 {};'
     b.gene_E_coli_16S.fasta.lexicmap.tsv.log

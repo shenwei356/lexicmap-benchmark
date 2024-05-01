@@ -33,23 +33,23 @@ Searching
 
     # hits
     ls b.*.tsv | rush -k 'echo -ne "{}\t" ; csvtk head -n 1 -t {} | csvtk cut -t -f hits -U;'
-    b.gene_E_coli_16S.fasta.lexicmap.tsv    107557
-    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       2313
-    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    3217
+    b.gene_E_coli_16S.fasta.lexicmap.tsv    294285
+    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       3588
+    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    58930
 
     # resource
     ls b.*.lexicmap.tsv.log | rush -k 'echo {} ; tail -n 3 {};'
     b.gene_E_coli_16S.fasta.lexicmap.tsv.log
-    elapsed time: 3m:05s
-    peak rss: 2.69 GB
+    elapsed time: 1m:19s
+    peak rss: 2.98 GB
 
     b.gene_E_faecalis_SecY.fasta.lexicmap.tsv.log
-    elapsed time: 0.866s
-    peak rss: 576.92 MB
+    elapsed time: 1.371s
+    peak rss: 597.7 MB
 
     b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv.log
-    elapsed time: 1m:10s
-    peak rss: 3.21 GB
+    elapsed time: 39.758s
+    peak rss: 3.11 GB
 
 ## BLASTN
 
@@ -63,13 +63,13 @@ Indexing
 
 Searching (in different nodes, because blastn cache the index data in memory)
 
-    blastdb=blastdb2/gtdb
+    blastdb=blastdb/gtdb
 
     q=b.gene_E_coli_16S.fasta
     q=b.gene_E_faecalis_SecY.fasta
     q=b.plasmid_pCUVET18-1784.4.fasta
     memusg -t -s "blastn -num_threads 48 -max_target_seqs 10000000 -db $blastdb -query $q \
-            -outfmt '7 qseqid sseqid pident length mismatch gaps qstart qend sstart send evalue bitscore sstrand qlen qcovs qcovhsp' \
+            -outfmt '6 qseqid sseqid pident length mismatch gaps qstart qend sstart send evalue bitscore sstrand qlen qcovs qcovhsp' \
         | csvtk add-header -t -n qseqid,sseqid,pident,length,mismatch,gaps,qstart,qend,sstart,send,evalue,bitscore,sstrand,qlen,qcovs,qcovhsp \
         > $q.blastn.tsv" > $q.blastn.tsv.log 2>&1;
 
@@ -92,17 +92,17 @@ Searching (in different nodes, because blastn cache the index data in memory)
     peak rss: 364.67 GB
 
 
-Compute number of genome hits
+Compute the number of genome hits
 
 
-    # preprae a subseq of sseqid2ass.tsv.gz
-    for f in b.*.blastn2.tsv; do
+    # preprare a subseq of sseqid2ass.tsv.gz
+    for f in b.*.blastn.tsv; do
         csvtk grep -t -P <(csvtk cut -tU -f sseqid $f) \
             sseqid2ass.tsv.gz -o $f.sseqid2ass.tsv.gz
     done
 
     # filter and add species
-    for f in b.*.blastn2.tsv; do
+    for f in b.*.blastn.tsv; do
         cat $f \
             | csvtk mutate -t -n sgenome -f sseqid \
             | csvtk replace -t -f sgenome -p '(.+)' -r '{kv}' -k $f.sseqid2ass.tsv.gz \
@@ -110,14 +110,14 @@ Compute number of genome hits
     done
 
     # count
-    for f in b.*.blastn2.tsv.with_sgenome.gz; do
+    for f in b.*.blastn.tsv.with_sgenome.gz; do
         echo -ne "$f\t";
         zcat $f | csvtk filter2 -t -f '$qcovhsp >= 50' | csvtk uniq -t -f sgenome | csvtk nrow -t;
     done
 
-    b.gene_E_coli_16S.fasta.blastn2.tsv.with_sgenome.gz     301197
-    b.gene_E_faecalis_SecY.fasta.blastn2.tsv.with_sgenome.gz        7121
-    b.plasmid_pCUVET18-1784.4.fasta.blastn2.tsv.with_sgenome.gz     69311
+    b.gene_E_coli_16S.fasta.blastn.tsv.with_sgenome.gz     301197
+    b.gene_E_faecalis_SecY.fasta.blastn.tsv.with_sgenome.gz        7121
+    b.plasmid_pCUVET18-1784.4.fasta.blastn.tsv.with_sgenome.gz     69311
 
 
 ## Data

@@ -139,16 +139,48 @@ Extracting results
     csvtk pretty -t long_reads.aligned_fraction.lexicmap.tsv
     tool       assembly          queries   hits    recall
     --------   ---------------   -------   -----   ------
-    lexicmap   GCF_000005845.2   15208     14575   95.84
-    lexicmap   GCF_000006765.1   20695     19703   95.21
-    lexicmap   GCF_000006945.2   16259     15576   95.80
-    lexicmap   GCF_000013425.1   9316      8931    95.87
-    lexicmap   GCF_000195955.2   14526     13859   95.41
-    lexicmap   GCF_000240185.1   18876     18015   95.44
-    lexicmap   GCF_001457635.1   6966      6701    96.20
-    lexicmap   GCF_008632635.1   13145     12603   95.88
-    lexicmap   GCF_018885085.1   13477     12945   96.05
-    lexicmap   GCF_022869705.1   9258      8927    96.42
+    lexicmap   GCF_000005845.2   15208     14860   97.71
+    lexicmap   GCF_000006765.1   20695     20112   97.18
+    lexicmap   GCF_000006945.2   16259     15873   97.63
+    lexicmap   GCF_000013425.1   9316      9117    97.86
+    lexicmap   GCF_000195955.2   14526     14176   97.59
+    lexicmap   GCF_000240185.1   18876     18367   97.30
+    lexicmap   GCF_001457635.1   6966      6826    97.99
+    lexicmap   GCF_008632635.1   13145     12863   97.85
+    lexicmap   GCF_018885085.1   13477     13136   97.47
+    lexicmap   GCF_022869705.1   9258      9087    98.15
+
+Filter by query coverage (70%)
+
+    ls long-reads/*.fna.gz \
+        | rush --eta -v 'ass={%@^(.+).fna}' -v 'query={}.fastq.gz' \
+            'queries=$(seqkit stats {query} -T | csvtk cut -tU -f num_seqs); \
+             hits=$(csvtk grep -t -f sgenome -p {ass} {query}.lexicmap.tsv.gz \
+                     | csvtk mutate -t -p "^(.+)_r\d+" -n qseqid \
+                     | csvtk filter2 -t -f "\$qseqid==\$sgenome" \
+                     | csvtk uniq -t -f query \
+                     | csvtk filter2 -t -f "\$qcovHSP>=70" \
+                     | csvtk nrow -t); \
+             echo -e "{ass}\t$queries\t$hits"' \
+        | csvtk add-header -t -n assembly,queries,hits \
+        | csvtk sort -t -k assembly \
+        | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
+        | csvtk mutate2 -t -n tool --at 1 -e '"lexicmap"' \
+        > long_reads.aligned_fraction_qov_ge70.lexicmap.tsv
+
+    csvtk pretty -t long_reads.aligned_fraction_qov_ge70.lexicmap.tsv
+    tool       assembly          queries   hits    recall
+    --------   ---------------   -------   -----   ------
+    lexicmap   GCF_000005845.2   15208     14666   96.44
+    lexicmap   GCF_000006765.1   20695     19706   95.22
+    lexicmap   GCF_000006945.2   16259     15668   96.37
+    lexicmap   GCF_000013425.1   9316      9018    96.80
+    lexicmap   GCF_000195955.2   14526     13953   96.06
+    lexicmap   GCF_000240185.1   18876     18072   95.74
+    lexicmap   GCF_001457635.1   6966      6740    96.76
+    lexicmap   GCF_008632635.1   13145     12683   96.49
+    lexicmap   GCF_018885085.1   13477     12995   96.42
+    lexicmap   GCF_022869705.1   9258      8991    97.12
 
 ### Blastn
 
@@ -158,8 +190,9 @@ Searching
         echo $f;
         zcat $f \
             | seqkit fq2fa \
-            | blastn -num_threads 16 -outfmt 6 -db blastdb/blastdb -query - \
-            | csvtk add-header -t -n qseqid,sseqid,pident,length,mismatch,gaps,qstart,qend,sstart,send,evalue,bitscore \
+            | blastn -num_threads 16 -db blastdb/blastdb -query - \
+                 -outfmt '6 qseqid sseqid pident length mismatch gaps qstart qend sstart send evalue bitscore sstrand qlen qcovs qcovhsp' \
+            | csvtk add-header -t -n qseqid,sseqid,pident,length,mismatch,gaps,qstart,qend,sstart,send,evalue,bitscore,sstrand,qlen,qcovs,qcovhsp \
             | gzip -c > $f.blastn.tsv.gz; \
     done
 
@@ -198,6 +231,39 @@ Extracting results
     blastn   GCF_008632635.1   13145     12909   98.20
     blastn   GCF_018885085.1   13477     13199   97.94
     blastn   GCF_022869705.1   9258      9099    98.28
+
+Filter by query coverage (70%)
+
+    ls long-reads/*.fna.gz \
+        | rush --eta -v 'ass={%@^(.+).fna}' -v 'query={}.fastq.gz' \
+            'queries=$(seqkit stats {query} -T | csvtk cut -tU -f num_seqs); \
+             hits=$(csvtk mutate -t -p "^(.+)_r\d+" -n sgenome {query}.blastn.tsv.gz \
+                     | csvtk mutate -t -f sseqid -n sgenome2 \
+                     | csvtk replace -t -f sgenome2 -p "(.+)" -r "{kv}" -k sseqid2ass.tsv.gz \
+                     | csvtk filter2 -t -f "\$sgenome2==\$sgenome" \
+                     | csvtk uniq -t -f qseqid \
+                     | csvtk filter2 -t -f "\$qcovs>=70" \
+                     | csvtk nrow -t); \
+             echo -e "{ass}\t$queries\t$hits"' \
+        | csvtk add-header -t -n assembly,queries,hits \
+        | csvtk sort -t -k assembly  \
+        | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
+        | csvtk mutate2 -t -n tool --at 1 -e '"blastn"' \
+        > long_reads.aligned_fraction_qov_ge70.blastn.tsv
+
+    csvtk pretty -t long_reads.aligned_fraction_qov_ge70.blastn.tsv
+    tool     assembly          queries   hits    recall
+    ------   ---------------   -------   -----   ------
+    blastn   GCF_000005845.2   15208     14931   98.18
+    blastn   GCF_000006765.1   20695     20294   98.06
+    blastn   GCF_000006945.2   16259     15941   98.04
+    blastn   GCF_000013425.1   9316      9130    98.00
+    blastn   GCF_000195955.2   14526     14232   97.98
+    blastn   GCF_000240185.1   18876     18479   97.90
+    blastn   GCF_001457635.1   6966      6826    97.99
+    blastn   GCF_008632635.1   13145     12904   98.17
+    blastn   GCF_018885085.1   13477     13191   97.88
+    blastn   GCF_022869705.1   9258      9096    98.25
 
 ### Minimap2
 
