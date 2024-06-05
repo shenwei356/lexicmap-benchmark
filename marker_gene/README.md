@@ -261,3 +261,11 @@ Compare
 
     csvtk corr -t -f blastn_recall,lexicmap_recall gene_TIGR00967/result.tsv
     blastn_recall   lexicmap_recall 0.9984
+
+Plot
+
+    cat gene_TIGR00967/result.tsv \
+        | csvtk cut -t -f query,blastn_recall,lexicmap_recall \
+        | csvtk rename  -t -f blastn_recall,lexicmap_recall -n Blastn,LexicMap \
+        > marker_gene.tsv
+

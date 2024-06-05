@@ -15,13 +15,15 @@ Genomes of 10 most frequent bacteria.
 |GCF_018885085.1|1496 |Clostridioides difficile  |S-0253                |2       |4095894    |
 |GCF_022869705.1|1351 |Enterococcus faecalis     |PartL-Efaecalis-RM8376|1       |2866948    |
 
-## LexicMap
+## Genome sequences
+
+### LexicMap
 
 Indexing
 
     lexicmap index -I genomes/ -O db.lmi --save-seed-pos --force
 
-    lexicmap utils seed-pos -d db.lmi/ -a -o db.lmi/seed_pos.tsv --plot-dir db.lmi.dist
+    lexicmap utils seed-pos -d db.lmi/ -a -o db.lmi/seed_pos.tsv --plot-dir db.lmi.dist --force
 
 Searching
 
@@ -29,12 +31,12 @@ Searching
     for len in 500 1000 1500 2000; do
         ls genomes/*.fna.gz \
             | while read f; do \
-                seqkit sliding -s 200 -W $len $f -o $f.qlen$len.fasta.gz; \
+                seqkit sliding -s 200 -W $len $f | seqkit grep -i -s -v -p NNNNNNNNNNNNNNNNNNNNNNNNN -o $f.qlen$len.fasta.gz; \
             done; \
     done
 
     for f in genomes/*.fasta.gz; do \
-        lexicmap search -d db.lmi/ -w $f -o $f.lexicmap.tsv.gz --log $f.lexicmap.tsv.gz.log ; \
+        lexicmap search -d db.lmi/ -w $f -o $f.lexicmap.tsv --log $f.lexicmap.tsv.log ; \
     done
 
 Extracting results
@@ -42,7 +44,7 @@ Extracting results
     ls genomes/*.fasta.gz \
         | rush --eta -v 'ass={%@^(.+).fna}' -v 'qlen={@qlen(\d+)}' \
             'queries=$(seqkit stats {} -T | csvtk cut -tU -f num_seqs); \
-             hits=$(csvtk grep -t -f sgenome -p {ass} {}.lexicmap.tsv.gz \
+             hits=$(csvtk grep -t -f sgenome -p {ass} {}.lexicmap.tsv \
                      | csvtk mutate -t -p "^(.+)_sliding" -n qseqid \
                      | csvtk filter2 -t -f "\$qseqid==\$sseqid" \
                      | csvtk uniq -t -f query \
@@ -51,11 +53,11 @@ Extracting results
         | csvtk add-header -t -n assembly,qlen,queries,hits \
         | csvtk sort -t -k assembly -k qlen:n \
         | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
-        | csvtk mutate2 -t -n tool --at 1 -e '"lexicmap"' \
+        | csvtk mutate2 -t -n tool --at 1 -e '"LexicMap"' \
         > aligned_fraction.lexicmap.tsv
 
 
-## Blastn
+### Blastn
 
 Indexing
 
@@ -67,7 +69,7 @@ Searching
         zcat $f \
             | blastn -num_threads 16 -outfmt 6 -db blastdb/blastdb -query - \
             | csvtk add-header -t -n qseqid,sseqid,pident,length,mismatch,gaps,qstart,qend,sstart,send,evalue,bitscore \
-            | gzip -c > $f.blastn.tsv.gz; \
+            > $f.blastn.tsv.gz; \
     done
 
 Extracting results
@@ -75,7 +77,7 @@ Extracting results
     ls genomes/*.fasta.gz \
         | rush --eta -v 'ass={%@^(.+).fna}' -v 'qlen={@qlen(\d+)}' \
             'queries=$(seqkit stats {} -T | csvtk cut -tU -f num_seqs); \
-             hits=$(csvtk mutate -t -p "^(.+)_sliding" -n qseqid2 {}.blastn.tsv.gz \
+             hits=$(csvtk mutate -t -p "^(.+)_sliding" -n qseqid2 {}.blastn.tsv \
                      | csvtk filter2 -t -f "\$qseqid2==\$sseqid" \
                      | csvtk uniq -t -f qseqid \
                      | csvtk nrow -t); \
@@ -83,8 +85,17 @@ Extracting results
         | csvtk add-header -t -n assembly,qlen,queries,hits \
         | csvtk sort -t -k assembly -k qlen:n \
         | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
-        | csvtk mutate2 -t -n tool --at 1 -e '"blastn"' \
+        | csvtk mutate2 -t -n tool --at 1 -e '"Blastn"' \
         > aligned_fraction.blastn.tsv
+
+### Plot
+
+    # concatenate results
+    csvtk concat -t -o aligned_fraction.tsv \
+        aligned_fraction.blastn.tsv \
+        aligned_fraction.lexicmap.tsv
+
+    Rscript plot.aligned_fraction.R
 
 
 ## Simulated long-reads
@@ -98,18 +109,19 @@ Simulated Oxford Nanopore R10.4.1 long-reads: simulated with [Badread](https://g
     # simulate, rename, and filter
     ls long-reads/*.fna.gz | rush --eta 'badread simulate --reference {} --quantity 50x | seqkit seq -m 500 | seqkit replace -p ".+" -r "{%..}_r{nr}" -o {}.fastq.gz'
 
-    $ seqkit stats *.fastq.gz -j 16
-    file                             format  type  num_seqs      sum_len  min_len   avg_len  max_len
-    GCF_000005845.2.fna.gz.fastq.gz  FASTQ   DNA     15,208  232,031,399      500  15,257.2  125,628
-    GCF_000006765.1.fna.gz.fastq.gz  FASTQ   DNA     20,695  313,165,917      500  15,132.4  152,538
-    GCF_000006945.2.fna.gz.fastq.gz  FASTQ   DNA     16,259  247,517,766      501  15,223.4  123,040
-    GCF_000013425.1.fna.gz.fastq.gz  FASTQ   DNA      9,316  141,033,333      508  15,138.8  159,977
-    GCF_000195955.2.fna.gz.fastq.gz  FASTQ   DNA     14,526  220,532,517      500  15,181.9  126,681
-    GCF_000240185.1.fna.gz.fastq.gz  FASTQ   DNA     18,876  284,058,647      504  15,048.7  138,364
-    GCF_001457635.1.fna.gz.fastq.gz  FASTQ   DNA      6,966  105,545,232      501  15,151.5   94,172
-    GCF_008632635.1.fna.gz.fastq.gz  FASTQ   DNA     13,145  198,974,545      500  15,136.9  106,406
-    GCF_018885085.1.fna.gz.fastq.gz  FASTQ   DNA     13,477  204,770,825      501  15,194.1  120,610
-    GCF_022869705.1.fna.gz.fastq.gz  FASTQ   DNA      9,258  143,349,138      503  15,483.8  114,629
+    $ seqkit stats -a *.fastq.gz -j 16
+    file                                        format  type  num_seqs      sum_len  min_len   avg_len  max_len       Q1        Q2        Q3  sum_gap     N50  N50_num  Q20(%)  Q30(%)  AvgQual  GC(%)
+    long-reads/GCF_000005845.2.fna.gz.fastq.gz  FASTQ   DNA     15,208  232,031,399      500  15,257.2  125,628  5,742.5  11,646.5    20,894        0  22,784    3,093   69.67   50.89    14.13  50.29
+    long-reads/GCF_000006765.1.fna.gz.fastq.gz  FASTQ   DNA     20,695  313,165,917      500  15,132.4  152,538  5,740.5    11,699  20,853.5        0  22,535    4,120    69.6   50.85     14.1     65
+    long-reads/GCF_000006945.2.fna.gz.fastq.gz  FASTQ   DNA     16,259  247,517,766      501  15,223.4  123,040  5,787.5    11,688  20,825.5        0  22,624    3,311    69.6   50.82    14.11   51.7
+    long-reads/GCF_000013425.1.fna.gz.fastq.gz  FASTQ   DNA      9,316  141,033,333      508  15,138.8  159,977  5,850.5  11,677.5  20,594.5        0  22,283    1,952   69.31   50.54    14.06  33.67
+    long-reads/GCF_000195955.2.fna.gz.fastq.gz  FASTQ   DNA     14,526  220,532,517      500  15,181.9  126,681    5,707    11,692    20,852        0  22,509    2,962   69.57   50.84    14.09  64.13
+    long-reads/GCF_000240185.1.fna.gz.fastq.gz  FASTQ   DNA     18,876  284,058,647      504  15,048.7  138,364  5,567.5    11,354    20,693        0  22,703    3,729   69.74   50.97    14.13  56.29
+    long-reads/GCF_001457635.1.fna.gz.fastq.gz  FASTQ   DNA      6,966  105,545,232      501  15,151.5   94,172    5,847  11,672.5    20,899        0  22,473    1,480   69.57   50.77    14.11  40.05
+    long-reads/GCF_008632635.1.fna.gz.fastq.gz  FASTQ   DNA     13,145  198,974,545      500  15,136.9  106,406    5,757    11,507    20,743        0  22,717    2,672   69.67   50.88    14.13  39.36
+    long-reads/GCF_018885085.1.fna.gz.fastq.gz  FASTQ   DNA     13,477  204,770,825      501  15,194.1  120,610    5,819    11,502    20,717        0  22,654    2,732   69.87   51.04    14.16  29.57
+    long-reads/GCF_022869705.1.fna.gz.fastq.gz  FASTQ   DNA      9,258  143,349,138      503  15,483.8  114,629    5,799    11,880    21,188        0  23,215    1,932   69.96   51.13    14.18  38.03
+
 
 ### LexicMap
 
@@ -133,7 +145,7 @@ Extracting results
         | csvtk add-header -t -n assembly,queries,hits \
         | csvtk sort -t -k assembly \
         | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
-        | csvtk mutate2 -t -n tool --at 1 -e '"lexicmap"' \
+        | csvtk mutate2 -t -n tool --at 1 -e '"LexicMap"' \
         > long_reads.aligned_fraction.lexicmap.tsv
 
     csvtk pretty -t long_reads.aligned_fraction.lexicmap.tsv
@@ -166,9 +178,9 @@ Filter by query coverage (70%)
         | csvtk sort -t -k assembly \
         | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
         | csvtk mutate2 -t -n tool --at 1 -e '"lexicmap"' \
-        > long_reads.aligned_fraction_qov_ge70.lexicmap.tsv
+        > long_reads.aligned_fraction_qcov_ge70.lexicmap.tsv
 
-    csvtk pretty -t long_reads.aligned_fraction_qov_ge70.lexicmap.tsv
+    csvtk pretty -t long_reads.aligned_fraction_qcov_ge70.lexicmap.tsv
     tool       assembly          queries   hits    recall
     --------   ---------------   -------   -----   ------
     lexicmap   GCF_000005845.2   15208     14666   96.44
@@ -216,7 +228,7 @@ Extracting results
         | csvtk add-header -t -n assembly,queries,hits \
         | csvtk sort -t -k assembly  \
         | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
-        | csvtk mutate2 -t -n tool --at 1 -e '"blastn"' \
+        | csvtk mutate2 -t -n tool --at 1 -e '"Blastn"' \
         > long_reads.aligned_fraction.blastn.tsv
 
     tool     assembly          queries   hits    recall
@@ -248,7 +260,7 @@ Filter by query coverage (70%)
         | csvtk add-header -t -n assembly,queries,hits \
         | csvtk sort -t -k assembly  \
         | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
-        | csvtk mutate2 -t -n tool --at 1 -e '"blastn"' \
+        | csvtk mutate2 -t -n tool --at 1 -e '"Blastn"' \
         > long_reads.aligned_fraction_qov_ge70.blastn.tsv
 
     csvtk pretty -t long_reads.aligned_fraction_qov_ge70.blastn.tsv
@@ -300,3 +312,38 @@ Extracting results
     minimap2   GCF_018885085.1   13477     13199   97.94
     minimap2   GCF_022869705.1   9258      9101    98.30
 
+### Plot
+
+Aligned fraction
+
+    # concatenate results
+    csvtk concat -t -o long_reads.aligned_fraction.tsv \
+        long_reads.aligned_fraction.blastn.tsv \
+        long_reads.aligned_fraction.lexicmap.tsv \
+        long_reads.aligned_fraction.minimap2.tsv
+
+    Rscript plot.long_reads.aligned_fraction.R
+
+Aligned fraction with qcov >= 70%
+
+    # concatenate results
+    csvtk concat -t -o long_reads.aligned_fraction_qcov_ge70.tsv \
+        long_reads.aligned_fraction_qcov_ge70.blastn.tsv \
+        long_reads.aligned_fraction_qcov_ge70.lexicmap.tsv
+
+    Rscript plot.long_reads.aligned_fraction_qcov_ge70.R
+
+Qcov and pident between Blastn and LexicMap
+
+
+    for f in long-reads/*.fna.gz.fastq.gz; do
+        csvtk join -t -f '1,2,3' \
+            <(csvtk uniq -t -f qseqid $f.blastn.tsv.gz   | csvtk filter2 -t -f "\$qcovs>=70"   | csvtk cut -t -f qseqid,sseqid,qlen,qcovs,pident) \
+            <(csvtk uniq -t -f query  $f.lexicmap.tsv.gz | csvtk filter2 -t -f "\$qcovHSP>=70" |csvtk cut -t -f query,sseqid,qlen,qcovHSP,pident) \
+            | csvtk rename -t -f 4-7 -n qcov_blastn,pident_blastn,qcov_lexicmap,pident_lexicmap \
+            > $f.tsv
+    done
+
+    csvtk concat long-reads/*.fastq.gz.tsv -o qcov_pident.tsv
+
+    Rscript plot.long_reads.qcov_pident.R

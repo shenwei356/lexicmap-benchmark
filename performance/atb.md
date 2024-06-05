@@ -80,7 +80,6 @@ Seaching
     # --------------------------------------
     # b.gene_E_faecalis_SecY.fasta
 
-
     queries                       1
     cumul_length_bps              1299
     matched_queries               1
@@ -90,13 +89,6 @@ Seaching
     target_genomes                7937
     target_batches                4
     nonalignments                 1956
-
-    # local
-    elapsed time: 1h:44m:56s
-    peak rss: 27.14 GB
-
-    # cluster, with 100 nodes
-    32 m 52 s
 
 
     # --------------------------------------
@@ -112,17 +104,6 @@ Seaching
     nonalignments                 1
 
 
-
-    # local
-    elapsed time: 8h:06m:26s
-    peak rss: 28.12 GB
-
-    # clusters, with 700 nodes
-    real    84m20.733s
-    user    25m11.268s
-    sys     4m34.840s
-
-
     # --------------------------------------
     # b.plasmid_pCUVET18-1784.4.fasta
 
@@ -130,16 +111,9 @@ Seaching
     cumul_length_bps              52830
     matched_queries               1
     aligned_queries               1
-    aligned_segments              11336
-    distinct_genome_query_pairs   1007
-    target_genomes                1007
-    target_batches                71
+    aligned_segments              496082
+    distinct_genome_query_pairs   46822
+    target_genomes                46822
+    target_batches                275
     nonalignments                 0
-
-    # local, with 100 nodes
-    elapsed time: 2h:50m:12s
-    peak rss: 20.56 GB
-
-    # cluster, with 100 nodes
-    32 m 23 s
 

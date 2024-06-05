@@ -32,7 +32,7 @@ Searching
     done
 
     # hits
-    ls b.*.tsv | rush -k 'echo -ne "{}\t" ; csvtk head -n 1 -t {} | csvtk cut -t -f hits -U;'
+    ls b.*.lexicmap.tsv | rush -k 'echo -ne "{}\t" ; csvtk head -n 1 -t {} | csvtk cut -t -f hits -U;'
     b.gene_E_coli_16S.fasta.lexicmap.tsv    294285
     b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       3588
     b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    58930
