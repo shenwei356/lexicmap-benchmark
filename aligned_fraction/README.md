@@ -21,6 +21,7 @@ Genomes of 10 most frequent bacteria.
 
 Indexing
 
+    rm genomes/*.qlen*
     lexicmap index -I genomes/ -O db.lmi --save-seed-pos --force
 
     lexicmap utils seed-pos -d db.lmi/ -a -o db.lmi/seed_pos.tsv --plot-dir db.lmi.dist --force
@@ -31,7 +32,7 @@ Searching
     for len in 500 1000 1500 2000; do
         ls genomes/*.fna.gz \
             | while read f; do \
-                seqkit sliding -s 200 -W $len $f | seqkit grep -i -s -v -p NNNNNNNNNNNNNNNNNNNNNNNNN -o $f.qlen$len.fasta.gz; \
+                seqkit sliding -s 200 -W $len $f | seqkit grep -i -s -v -p NNNNNNNNNNNNNNNNNNNN -o $f.qlen$len.fasta.gz; \
             done; \
     done
 
@@ -52,7 +53,7 @@ Extracting results
              echo -e "{ass}\t{qlen}\t$queries\t$hits"' \
         | csvtk add-header -t -n assembly,qlen,queries,hits \
         | csvtk sort -t -k assembly -k qlen:n \
-        | csvtk mutate2 -t -n recall -e '$hits/$queries*100' \
+        | csvtk mutate2 -t -n recall -e '$hits*100/$queries' \
         | csvtk mutate2 -t -n tool --at 1 -e '"LexicMap"' \
         > aligned_fraction.lexicmap.tsv
 
@@ -128,7 +129,8 @@ Simulated Oxford Nanopore R10.4.1 long-reads: simulated with [Badread](https://g
 Searching
 
     for f in long-reads/*.fastq.gz; do \
-        lexicmap search -d db.lmi/ -w $f -o $f.lexicmap.tsv.gz --log $f.lexicmap.tsv.gz.log ; \
+        echo $f;
+        memusg -t -s "lexicmap search -d db.lmi/ -w $f -o $f.lexicmap.tsv.gz" > $f.lexicmap.tsv.gz.log 2>&1 ; \
     done
 
 Extracting results
@@ -151,16 +153,16 @@ Extracting results
     csvtk pretty -t long_reads.aligned_fraction.lexicmap.tsv
     tool       assembly          queries   hits    recall
     --------   ---------------   -------   -----   ------
-    lexicmap   GCF_000005845.2   15208     14860   97.71
-    lexicmap   GCF_000006765.1   20695     20112   97.18
-    lexicmap   GCF_000006945.2   16259     15873   97.63
-    lexicmap   GCF_000013425.1   9316      9117    97.86
-    lexicmap   GCF_000195955.2   14526     14176   97.59
-    lexicmap   GCF_000240185.1   18876     18367   97.30
-    lexicmap   GCF_001457635.1   6966      6826    97.99
-    lexicmap   GCF_008632635.1   13145     12863   97.85
-    lexicmap   GCF_018885085.1   13477     13136   97.47
-    lexicmap   GCF_022869705.1   9258      9087    98.15
+    LexicMap   GCF_000005845.2   15208     14863   97.73
+    LexicMap   GCF_000006765.1   20695     20134   97.29
+    LexicMap   GCF_000006945.2   16259     15874   97.63
+    LexicMap   GCF_000013425.1   9316      9117    97.86
+    LexicMap   GCF_000195955.2   14526     14178   97.60
+    LexicMap   GCF_000240185.1   18876     18373   97.34
+    LexicMap   GCF_001457635.1   6966      6824    97.96
+    LexicMap   GCF_008632635.1   13145     12868   97.89
+    LexicMap   GCF_018885085.1   13477     13141   97.51
+    LexicMap   GCF_022869705.1   9258      9089    98.17
 
 Filter by query coverage (70%)
 
@@ -171,7 +173,7 @@ Filter by query coverage (70%)
                      | csvtk mutate -t -p "^(.+)_r\d+" -n qseqid \
                      | csvtk filter2 -t -f "\$qseqid==\$sgenome" \
                      | csvtk uniq -t -f query \
-                     | csvtk filter2 -t -f "\$qcovHSP>=70" \
+                     | csvtk filter2 -t -f "\$qcovGnm>=70" \
                      | csvtk nrow -t); \
              echo -e "{ass}\t$queries\t$hits"' \
         | csvtk add-header -t -n assembly,queries,hits \
@@ -183,16 +185,16 @@ Filter by query coverage (70%)
     csvtk pretty -t long_reads.aligned_fraction_qcov_ge70.lexicmap.tsv
     tool       assembly          queries   hits    recall
     --------   ---------------   -------   -----   ------
-    lexicmap   GCF_000005845.2   15208     14666   96.44
-    lexicmap   GCF_000006765.1   20695     19706   95.22
-    lexicmap   GCF_000006945.2   16259     15668   96.37
-    lexicmap   GCF_000013425.1   9316      9018    96.80
-    lexicmap   GCF_000195955.2   14526     13953   96.06
-    lexicmap   GCF_000240185.1   18876     18072   95.74
-    lexicmap   GCF_001457635.1   6966      6740    96.76
-    lexicmap   GCF_008632635.1   13145     12683   96.49
-    lexicmap   GCF_018885085.1   13477     12995   96.42
-    lexicmap   GCF_022869705.1   9258      8991    97.12
+    lexicmap   GCF_000005845.2   15208     14848   97.63
+    lexicmap   GCF_000006765.1   20695     20077   97.01
+    lexicmap   GCF_000006945.2   16259     15856   97.52
+    lexicmap   GCF_000013425.1   9316      9111    97.80
+    lexicmap   GCF_000195955.2   14526     14161   97.49
+    lexicmap   GCF_000240185.1   18876     18342   97.17
+    lexicmap   GCF_001457635.1   6966      6821    97.92
+    lexicmap   GCF_008632635.1   13145     12850   97.76
+    lexicmap   GCF_018885085.1   13477     13127   97.40
+    lexicmap   GCF_022869705.1   9258      9084    98.12
 
 ### Blastn
 
@@ -333,13 +335,13 @@ Aligned fraction with qcov >= 70%
 
     Rscript plot.long_reads.aligned_fraction_qcov_ge70.R
 
-Qcov and pident between Blastn and LexicMap
+Qcov and pident between Blastn and LexicMap for qcovHSP > 70%
 
 
     for f in long-reads/*.fna.gz.fastq.gz; do
         csvtk join -t -f '1,2,3' \
-            <(csvtk uniq -t -f qseqid $f.blastn.tsv.gz   | csvtk filter2 -t -f "\$qcovs>=70"   | csvtk cut -t -f qseqid,sseqid,qlen,qcovs,pident) \
-            <(csvtk uniq -t -f query  $f.lexicmap.tsv.gz | csvtk filter2 -t -f "\$qcovHSP>=70" |csvtk cut -t -f query,sseqid,qlen,qcovHSP,pident) \
+            <(csvtk uniq -t -f qseqid $f.blastn.tsv.gz   | csvtk filter2 -t -f "\$qcovhsp>=70" | csvtk cut -t -f qseqid,sseqid,qlen,qcovhsp,pident) \
+            <(csvtk uniq -t -f query  $f.lexicmap.tsv.gz | csvtk filter2 -t -f "\$qcovHSP>=70" | csvtk cut -t -f query,sseqid,qlen,qcovHSP,pident) \
             | csvtk rename -t -f 4-7 -n qcov_blastn,pident_blastn,qcov_lexicmap,pident_lexicmap \
             > $f.tsv
     done

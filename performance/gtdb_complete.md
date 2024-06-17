@@ -12,16 +12,26 @@ Indexing
 
     memusg -t -s "lexicmap index -S -X files.txt -O gtdb_complete.lmi --force" > gtdb_complete.lmi.log 2>&1
 
-    elapsed time: 3h:26m:43s
-    peak rss: 35.21 GB
+    elapsed time: 3h:39m:33s
+    peak rss: 37.37 GB
 
-    gtdb_complete.lmi: 510.01 GB
+    gtdb_complete.lmi: 509.99 GB
      362.98 GB      genomes
-     147.03 GB      seeds
+     147.00 GB      seeds
        9.60 MB      genomes.map.bin
      312.53 KB      masks.bin
       269.00 B      info.toml
 
+    # 500 bp
+    elapsed time: 5h:15m:04s
+    peak rss: 32.0 GB
+
+    gtdb_complete.lmi: 522.58 GB
+     362.98 GB      genomes
+     159.59 GB      seeds
+       9.60 MB      genomes.map.bin
+     312.53 KB      masks.bin
+      331.00 B      info.toml
 
 Searching
 
@@ -33,23 +43,57 @@ Searching
 
     # hits
     ls b.*.lexicmap.tsv | rush -k 'echo -ne "{}\t" ; csvtk head -n 1 -t {} | csvtk cut -t -f hits -U;'
-    b.gene_E_coli_16S.fasta.lexicmap.tsv    294285
-    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       3588
-    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    58930
+
+    b.gene_E_coli_16S.fasta.lexicmap.tsv    295628
+    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       3649
+    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    59211
+
+
+    # hits with qcovGnm > 50
+    ls b.*.lexicmap.tsv | rush -k 'echo -ne "{}\t" ; \
+        csvtk filter2 -t -f "\$qcovGnm >= 50" {} | csvtk uniq -t -f sgenome | csvtk nrow -t '
+
+    b.gene_E_coli_16S.fasta.lexicmap.tsv    284806
+    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       3646
+    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    3245
+
+
+    # hits with qcovHSP > 50
+    ls b.*.lexicmap.tsv | rush -k 'echo -ne "{}\t" ; \
+        csvtk filter2 -t -f "\$qcovHSP >= 50" {} | csvtk uniq -t -f sgenome | csvtk nrow -t '
+
+    b.gene_E_coli_16S.fasta.lexicmap.tsv    275454
+    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv       3645
+    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv    1186
 
     # resource
     ls b.*.lexicmap.tsv.log | rush -k 'echo {} ; tail -n 3 {};'
+
     b.gene_E_coli_16S.fasta.lexicmap.tsv.log
-    elapsed time: 1m:19s
-    peak rss: 2.98 GB
+    elapsed time: 1m:17s
+    peak rss: 3.98 GB
 
     b.gene_E_faecalis_SecY.fasta.lexicmap.tsv.log
-    elapsed time: 1.371s
-    peak rss: 597.7 MB
+    elapsed time: 1.555s
+    peak rss: 905.57 MB
 
     b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv.log
-    elapsed time: 39.758s
-    peak rss: 3.11 GB
+    elapsed time: 35.269s
+    peak rss: 4.46 GB
+
+    # 500 bp
+    b.gene_E_coli_16S.fasta.lexicmap.tsv.log
+    elapsed time: 3m:36s
+    peak rss: 4.05 GB
+
+    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv.log
+    elapsed time: 4.606s
+    peak rss: 773.94 MB
+
+    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv.log
+    elapsed time: 1m:05s
+    peak rss: 4.38 GB
+
 
 ## BLASTN
 
@@ -112,12 +156,34 @@ Compute the number of genome hits
     # count
     for f in b.*.blastn.tsv.with_sgenome.gz; do
         echo -ne "$f\t";
-        zcat $f | csvtk filter2 -t -f '$qcovhsp >= 50' | csvtk uniq -t -f sgenome | csvtk nrow -t;
+        zcat $f | csvtk filter2 -t -f '$qcovhsp > 0' | csvtk uniq -t -f sgenome | csvtk nrow -t;
     done
 
     b.gene_E_coli_16S.fasta.blastn.tsv.with_sgenome.gz     301197
     b.gene_E_faecalis_SecY.fasta.blastn.tsv.with_sgenome.gz        7121
-    b.plasmid_pCUVET18-1784.4.fasta.blastn.tsv.with_sgenome.gz     69311
+    b.plasmid_pCUVET18-1784.4.fasta.blastn.tsv.with_sgenome.gz     63792
+
+
+    # hits with qcovs >= 50
+    for f in b.*.blastn.tsv.with_sgenome.gz; do
+        echo -ne "$f\t";
+        zcat $f | csvtk filter2 -t -f '$qcovs >= 50' | csvtk uniq -t -f sgenome | csvtk nrow -t;
+    done
+
+    b.gene_E_coli_16S.fasta.blastn.tsv.with_sgenome.gz      278066
+    b.gene_E_faecalis_SecY.fasta.blastn.tsv.with_sgenome.gz 6177
+    b.plasmid_pCUVET18-1784.4.fasta.blastn.tsv.with_sgenome.gz      2997
+
+
+    # hits with qcovHSP >= 50
+    for f in b.*.blastn.tsv.with_sgenome.gz; do
+        echo -ne "$f\t";
+        zcat $f | csvtk filter2 -t -f '$qcovhsp >= 50' | csvtk uniq -t -f sgenome | csvtk nrow -t;
+    done
+
+    b.gene_E_coli_16S.fasta.blastn.tsv.with_sgenome.gz      277042
+    b.gene_E_faecalis_SecY.fasta.blastn.tsv.with_sgenome.gz 6177
+    b.plasmid_pCUVET18-1784.4.fasta.blastn.tsv.with_sgenome.gz      2308
 
 
 ## Data

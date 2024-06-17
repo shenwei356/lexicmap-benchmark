@@ -218,7 +218,7 @@ Steps
 
     # filter and add species
     zcat gene_TIGR00967/all.fa.blastn.tsv.gz \
-        | csvtk filter2 -t -f '$qcovs >= 95' \
+        | csvtk filter2 -t -f '$qcovhsp >= 95' \
         | csvtk mutate -t -n sgenome -f sseqid \
         | csvtk replace -t -f sgenome -p '(.+)' -r '{kv}' -k gene_TIGR00967/all.fa.blastn.tsv.gz.sseqid2ass.tsv.gz \
         | csvtk mutate -t -n species -f sgenome \
@@ -248,16 +248,16 @@ Compare
         | csvtk pretty -t
     query             species                      expected   blastn_hits   blastn_TP   blastn_recall   lexicmap_hits   lexicmap_TP   lexicmap_recall
     ---------------   --------------------------   --------   -----------   ---------   -------------   -------------   -----------   ---------------
-    GCF_000005845.2   Escherichia coli             33771      83112         33635       99.5973         73803           33633         99.5914
-    GCF_000006765.1   Pseudomonas aeruginosa       7027       14608         6972        99.2173         7220            6972          99.2173
-    GCF_000006945.2   Salmonella enterica          13829      82577         13771       99.5806         74874           13770         99.5734
-    GCF_000013425.1   Staphylococcus aureus        14959      19154         14919       99.7326         15231           14918         99.7259
-    GCF_000195955.2   Mycobacterium tuberculosis   7132       10999         7121        99.8458         7146            7120          99.8317
-    GCF_000240185.1   Klebsiella pneumoniae        14962      81011         14857       99.2982         73724           14854         99.2782
+    GCF_000005845.2   Escherichia coli             33771      83102         33631       99.5854         73803           33633         99.5914
+    GCF_000006765.1   Pseudomonas aeruginosa       7027       14598         6972        99.2173         7220            6972          99.2173
+    GCF_000006945.2   Salmonella enterica          13829      82567         13769       99.5661         74874           13770         99.5734
+    GCF_000013425.1   Staphylococcus aureus        14959      19153         14918       99.7259         15231           14918         99.7259
+    GCF_000195955.2   Mycobacterium tuberculosis   7132       10997         7120        99.8317         7146            7120          99.8317
+    GCF_000240185.1   Klebsiella pneumoniae        14962      81001         14855       99.2849         73724           14854         99.2782
     GCF_001457635.1   Streptococcus pneumoniae     8895       9815          8893        99.9775         9304            8889          99.9325
-    GCF_008632635.1   Acinetobacter baumannii      6874       8964          6853        99.6945         7711            6848          99.6218
+    GCF_008632635.1   Acinetobacter baumannii      6874       8962          6852        99.6800         7711            6848          99.6218
     GCF_018885085.1   Clostridioides difficile     2701       2868          2665        98.6672         2725            2665          98.6672
-    GCF_022869705.1   Enterococcus faecalis        2314       6101          2312        99.9136         2313            2312          99.9136
+    GCF_022869705.1   Enterococcus faecalis        2314       6100          2311        99.8704         2313            2312          99.9136
 
     csvtk corr -t -f blastn_recall,lexicmap_recall gene_TIGR00967/result.tsv
     blastn_recall   lexicmap_recall 0.9984
@@ -269,3 +269,4 @@ Plot
         | csvtk rename  -t -f blastn_recall,lexicmap_recall -n Blastn,LexicMap \
         > marker_gene.tsv
 
+    Rscript plot.marker_gene.R

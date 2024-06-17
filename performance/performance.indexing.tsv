@@ -1,8 +1,8 @@
 dataset	genomes	gzip_size	tool	db_size	time	RAM
-GTDB complete	402,538	578 GB	LexicMap	510 GB	3 h 26 m	35 GB
+GTDB complete	402,538	578 GB	LexicMap	510 GB	3 h 40 m	37.4 GB
 			Blastn	360 GB	3 h 11 m	718 MB
-Genbank+RefSeq	2,340,672	3.5 TB	LexicMap	2.91 TB	16 h 40 m	79 GB
-			Blastn	2.15 TB	14 h 4 m	4.3 GB
-AllTheBacteria HQ	1,858,610	3.1 TB	LexicMap	2.32 TB	10 h 48 m	43 GB
-			Blastn	1.76 TB	14 h 3 m	2.9 GB
+Genbank+RefSeq	2,340,672	3.5 TB	LexicMap	2.91 TB	21 h 28 m	82.14 GB
+			Blastn	2.15 TB	14 h 04 m	4.3 GB
+AllTheBacteria HQ	1,858,610	3.1 TB	LexicMap	2.32 TB	11 h 51 m	42.6 GB
+			Blastn	1.76 TB	14 h 03 m	2.9 GB
 			Phylign	248 GB	/	/

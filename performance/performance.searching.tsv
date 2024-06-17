@@ -1,19 +1,19 @@
-dataset	genomes	query	query_len	tool	genome_hits	time	RAM
-GTDB complete	402,538	a marker gene	1,299 bp	LexicMap	3,588	1.4 s	598 MB
-				Blastn	7,121	36 m 11 s	351 GB
-		a 16S rRNA gene	1,542 bp	LexicMap	294,285	1 m 19 s	3.0 GB
-				Blastn	301,197	39 m 13 s	378 GB
-		a plasmid	52,830 bp	LexicMap	58,930	40 s	3.2 GB
-				Blastn	69,311	37 m 42 s	365 GB
-Genbank+RefSeq	2,340,672	a marker gene	1,299 bp	LexicMap	16,556	6.2 s	1.3 GB
-		a 16S rRNA gene	1,542 bp	LexicMap	1,875,260	8 m 29 s	10.8 GB
-		a plasmid	52,830 bp	LexicMap	494,860	4 m 08 s	15.0 GB
-AllTheBacteria HQ	1,858,610	a marker gene	1,299 bp	LexicMap	10,837	11.3 s	1.1 GB
-				Phylign_local	7,937	29 m 13 s	78.5 GB
-				Phylign_cluster	7,937	32 m 26 s	/
-		a 16S rRNA gene	1,542 bp	LexicMap	1,853,846	12 m 31 s	9.7 GB
-				Phylign_local	1,032,948	1 h 58 m	73.3 GB
-				Phylign_cluster	1,032,948	83 m 36 s	/
-		a plasmid	52,830 bp	LexicMap	427,112	4 m 13 s	12.9 GB
-				Phylign_local	46,822	38 m 55 s	76.6 GB
-				Phylign_cluster	46,822	36 m 30s	/
+dataset	genomes	query	query_len	tool	genome_hits	genome_hits(qcov>50)	time	RAM
+GTDB complete	402,538	a marker gene	1,299 bp	LexicMap	3,649	3,645	1.555 s	905.57 MB
+				Blastn	7,121	6,177	36 m 11 s	351 GB
+		a 16S rRNA gene	1,542 bp	LexicMap	295,628	275,454	1 m 17 s	3.98 GB
+				Blastn	301,197	277,042	39 m 13 s	378 GB
+		a plasmid	52,830 bp	LexicMap	59,211	1,186	35.269 s	4.46 GB
+				Blastn	69,311	2,308	37 m 42 s	365 GB
+Genbank+RefSeq	2,340,672	a marker gene	1,299 bp	LexicMap	16,788	16,756	3.119 s	2.12 GB
+		a 16S rRNA gene	1,542 bp	LexicMap	1,894,943	1,375,561	5 m 32 s	17.25 GB
+		a plasmid	52,830 bp	LexicMap	495,915	6,555	3 m 50 s	22.46 GB
+AllTheBacteria HQ	1,858,610	a marker gene	1,299 bp	LexicMap	11,205	11,199	3.226 s	1.83 GB
+				Phylign_local	7,937	N/A	29 m 13 s	78.50 GB
+				Phylign_cluster	7,937	N/A	32 m 26 s	N/A
+		a 16S rRNA gene	1,542 bp	LexicMap	1,854,616	1,735,763	3 m 42 s	14.70 GB
+				Phylign_local	1,032,948	N/A	1 h 58 m	73.30 GB
+				Phylign_cluster	1,032,948	N/A	83 m 36 s	N/A
+		a plasmid	52,830 bp	LexicMap	427,544	3,620	4 m 49 s	19.24 GB
+				Phylign_local	46,822	N/A	39 m 37 s	76.99 GB
+				Phylign_cluster	46,822	N/A	38 m 22 s	N/A

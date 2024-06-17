@@ -12,12 +12,12 @@ Indexing
 
     memusg -t -s "lexicmap index -S -X files.txt -O gtdb_repr.lmi --force" > gtdb_repr.lmi.log 2>&1
 
-    elapsed time: 1h:30m:50s
-    peak rss: 38.34 GB
+    elapsed time: 1h:04m:27s
+    peak rss: 48.05 GB
 
-    gtdb_repr.lmi: 110.37 GB
+    gtdb_repr.lmi: 110.33 GB
       66.78 GB      genomes
-      43.59 GB      seeds
+      43.55 GB      seeds
        2.03 MB      genomes.map.bin
      312.53 KB      masks.bin
       266.00 B      info.toml
