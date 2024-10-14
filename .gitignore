@@ -1,2 +1,7 @@
 .directory
 .Rhistory
+.brename_detail.txt
+Thumbs.db*
+
+*.rush
+t.txt
