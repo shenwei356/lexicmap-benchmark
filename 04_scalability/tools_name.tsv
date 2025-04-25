@@ -1,0 +1,7 @@
+lexicmap	LexicMap
+blastn	Blastn
+minimap2	Minimap2
+mmseqs2	MMseqs2
+cobs	COBS
+ropebwt3	Ropebwt3
+blastn2	Blastn(ws=15)

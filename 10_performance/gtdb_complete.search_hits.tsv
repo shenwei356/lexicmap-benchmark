@@ -1,0 +1,21 @@
+query	tool	sum	high-similarity	medium-similarity	low-similarity
+amr	blastn	5357772	1150407	772858	3434507
+amr	blastn2	10877544	1150410	840464	8886670
+amr	lexicmap	4665317	1123251	776153	2765913
+amr	minimap2	2078490	943516	319529	815445
+amr	mmseqs2	10137345	1148942	808177	8180226
+gene_E_coli_16S	blastn	301197	61878	109477	129842
+gene_E_coli_16S	blastn2	301197	61878	109477	129842
+gene_E_coli_16S	lexicmap	306064	60999	69293	175772
+gene_E_coli_16S	minimap2	17656	15998	1652	6
+gene_E_coli_16S	mmseqs2	324364	60915	89874	173575
+gene_E_faecalis_SecY	blastn	7121	2311	47	4763
+gene_E_faecalis_SecY	blastn2	57741	2311	47	55383
+gene_E_faecalis_SecY	lexicmap	6255	2311	46	3898
+gene_E_faecalis_SecY	minimap2	2312	2312		
+gene_E_faecalis_SecY	mmseqs2	67537	2304	54	65179
+plasmid_pCUVET18-1784.4	blastn	69311	21	2865	66425
+plasmid_pCUVET18-1784.4	blastn2	91847	21	2865	88961
+plasmid_pCUVET18-1784.4	lexicmap	65029	21	2808	62200
+plasmid_pCUVET18-1784.4	minimap2	3033	35	1873	1125
+plasmid_pCUVET18-1784.4	mmseqs2	90277	7	1650	88620

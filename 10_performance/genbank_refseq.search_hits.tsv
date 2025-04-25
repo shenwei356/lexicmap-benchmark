@@ -1,0 +1,5 @@
+query	tool	sum	high-similarity	medium-similarity	low-similarity
+amr	lexicmap	30967882	7636386	4858063	18473433
+gene_E_coli_16S	lexicmap	1955167	245884	501691	1207592
+gene_E_faecalis_SecY	lexicmap	41718	11746	115	29857
+plasmid_pCUVET18-1784.4	lexicmap	560330	96	15370	544864

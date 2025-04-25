@@ -1,0 +1,9 @@
+query	tool	time	memory
+amr	lexicmap	12h:17m:11s	17.68 GB
+amr	phylign	2h:36m:08s	85.92 GB
+gene_E_coli_16S	lexicmap	25m:52s	14.82 GB
+gene_E_coli_16S	phylign	2h:10m:33s	77.02 GB
+gene_E_faecalis_SecY	lexicmap	1m:52s	3.77 GB
+gene_E_faecalis_SecY	phylign	30m:48s	77.62 GB
+plasmid_pCUVET18-1784.4	lexicmap	31m:31s	15.16 GB
+plasmid_pCUVET18-1784.4	phylign	47m:33s	82.56 GB

@@ -10,95 +10,53 @@
 
 Indexing
 
-    memusg -t -s "lexicmap index -S -X files.txt -b 25000 -O atb_hq.lmi --force" > atb_hq.lmi.log 2>&1
+    memusg -t -s "lexicmap index -j 48 -S -X files.txt -b 25000 -O atb_hq.lmi --force" > atb_hq.lmi.log 2>&1
 
-    elapsed time: 2.0days 0h:07m:03s
-    peak rss: 88.56 GB
+    elapsed time: 1.0days 16h:21m:51s
+    peak rss: 97.68 GB
 
-    atb_hq.lmi: 3.88 TB
-       2.11 TB      seeds
-       1.77 TB      genomes
-      39.22 MB      genomes.map.bin
-     312.53 KB      masks.bin
-      332.00 B      info.toml
-
+    atb_hq.lmi: 4.30 TB (4,304,515,140,156)
+       2.36 TB      seeds
+       1.94 TB      genomes
+      41.12 MB      genomes.map.bin
+     160.03 kB      masks.bin
+         619 B      info.toml
+          24 B      genomes.chunks.bin
 
 Searching
 
     db=atb_hq.lmi
 
-    ls b.*.fasta | tac |  while read q; do \
-        echo $q; memusg -t -s "lexicmap search -d $db $q -o $q.lexicmap.tsv" > $q.lexicmap.tsv.log 2>&1; \
+    ls b.*fasta | tac | while read q; do \
+        if [[ $q =~ "amr" ]]; then debug=""; else debug="--debug"; fi; \
+        echo $q; memusg -t -s "lexicmap search -j 48 -d $db $q -o $q.lexicmap.tsv $debug" > $q.lexicmap.tsv.log 2>&1; \
     done
 
-    # --------------------------------------------------------------------------
 
+    # --------------------------------------------------------------------------
     # hits
+    
+    qcov1gene=90
+    qcov2gene=50
+    qcov1plasmid=70
+    qcov2plasmid=30
+    pident1=90
+    pident2=80
+    
+    # check similarity
     ls b.*.lexicmap.tsv \
-        | rush -k 'echo -ne "{}\t"; \
-            csvtk uniq -t -f query,sgenome {} | csvtk nrow -t' \
-        | csvtk pretty -Ht -r 2
+        | rush -v qcov1gene=$qcov1gene       -v qcov2gene=$qcov2gene \
+               -v qcov1plasmid=$qcov1plasmid -v qcov2plasmid=$qcov2plasmid \
+               -v pident1=$pident1           -v pident2=$pident2 \
+            'if [[ "{%}" =~ "plasmid" ]]; then qcov1={qcov1plasmid}; qcov2={qcov2plasmid}; \
+                else qcov1={qcov1gene}; qcov2={qcov2gene}; fi; \
+            csvtk uniq -t -f query,sgenome {} \
+                | csvtk mutate2 -t -n type -e "\$qcovHSP>=$qcov1 && \$pident>={pident1} ? \
+                    \"high\" : (\$qcovHSP>=$qcov2 && \$pident>={pident2} ? \"medium\" : \"low\")" -o {}.type; \
+            csvtk freq -t -f type -k {}.type > {}.type.freq' --eta
 
-    b.amr.fasta.lexicmap.tsv                       21288000
-    b.gene_E_coli_16S.fasta.lexicmap.tsv            1857761
-    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv         27963
-    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv     468821
-
-    # -----------------------------------
-
-    # hits with qcovGnm > 50
-    ls b.*.lexicmap.tsv \
-        | rush -k 'echo -ne "{}\t"; \
-            csvtk filter2 -t -f "\$qcovGnm >= 50" {} \
-                | csvtk uniq -t -f query,sgenome | csvtk nrow -t' \
-        | csvtk pretty -Ht -r 2
-
-    b.amr.fasta.lexicmap.tsv                       12274740
-    b.gene_E_coli_16S.fasta.lexicmap.tsv            1856212
-    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv         27954
-    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv      11047
-
-
-    # -----------------------------------
-
-    # hits with qcovHSP > 50
-    ls b.*.lexicmap.tsv \
-        | rush -k 'echo -ne "{}\t"; \
-            csvtk filter2 -t -f "\$qcovHSP >= 50" {} \
-                | csvtk uniq -t -f query,sgenome | csvtk nrow -t' \
-        | csvtk pretty -Ht -r 2
-
-    b.amr.fasta.lexicmap.tsv                       12148642
-    b.gene_E_coli_16S.fasta.lexicmap.tsv            1740000
-    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv         27953
-    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv       3618
-
-
-    # --------------------------------------------------------------------------
-
-    # resource
-    ls b.*.lexicmap.tsv.log | rush -k 'echo {} ; tail -n 3 {};'
-
-    b.amr.fasta.lexicmap.tsv.log
-    elapsed time: 2h:18m:55s
-    peak rss: 49.92 GB
-
-    b.gene_E_coli_16S.fasta.lexicmap.tsv.log
-    elapsed time: 9m:36s
-    peak rss: 14.87 GB
-
-    b.gene_E_faecalis_SecY.fasta.lexicmap.tsv.log
-    elapsed time: 30.638s
-    peak rss: 3.41 GB
-
-    b.plasmid_pCUVET18-1784.4.fasta.lexicmap.tsv.log
-    elapsed time: 15m:55s
-    peak rss: 15.71 GB
-
-
-
-
-Search with a serial numbers of AMR genomes.
+    
+### Search with a serial numbers of AMR genomes.
 
     mkdir -p amrs; cd amrs
 
@@ -266,3 +224,174 @@ Seaching
     real    39m33.540s
     user    7m51.464s
     sys     2m47.193s
+
+Counting
+
+    # preprare a subseq of sseqid2ass.tsv.gz
+    ls *.sam_summary.gz \
+        | rush --eta 'csvtk grep -t -P <(zcat {} | grep -v ^@ {} | grep -v ^= | cut -f 3) sseqid2ass.tsv.gz -o {}.sseqid2ass.tsv.gz'
+
+    # filter and add species
+    ls *.sam_summary.gz \
+        | rush --eta 'zcat {} \
+                | grep -v ^= \
+                | sam2tsv.py \
+                | csvtk mutate -t -n sgenome -f target \
+                | csvtk replace -t -f sgenome -p "(.+)" -r "{kv}" -k {}.sseqid2ass.tsv.gz -o {}.with_sgenome.gz'
+
+    # --------------------------------------------------------------------------
+    # hits
+    
+    qcov1gene=90
+    qcov2gene=50
+    qcov1plasmid=70
+    qcov2plasmid=30
+    pident1=90
+    pident2=80
+    
+    # check similarity
+    ls *.sam_summary.gz.with_sgenome.gz \
+        | rush -v qcov1gene=$qcov1gene       -v qcov2gene=$qcov2gene \
+               -v qcov1plasmid=$qcov1plasmid -v qcov2plasmid=$qcov2plasmid \
+               -v pident1=$pident1           -v pident2=$pident2 \
+            'if [[ "{%}" =~ "plasmid" ]]; then qcov1={qcov1plasmid}; qcov2={qcov2plasmid}; \
+                else qcov1={qcov1gene}; qcov2={qcov2gene}; fi; \
+            csvtk uniq -t -f query,sgenome {} \
+                | csvtk mutate2 -t -n type -e "\$alignment_length/\$query_length*100>=$qcov1 && \$identity*100>={pident1} ? \
+                    \"high\" : (\$alignment_length/\$query_length*100>=$qcov2 && \$identity*100>={pident2} ? \"medium\" : \"low\")" -o {}.type; \
+            csvtk freq -t -f type -k {}.type > {}.type.freq' --eta
+
+## Summarise
+
+    # time and memory
+    ls b.*.{lexicmap,phylign}.tsv.log \
+        | rush -v 'query={@b\.(.+)\.fasta}' -v 'tool={@fasta\.(\w+)}' \
+            'time=$(tail -n3 {} | head -n 1 | cut -d " " -f3-); \
+              mem=$(tail -n2 {} | head -n 1 | cut -d " " -f3-); \
+              echo -e "{query}\t{tool}\t$time\t$mem"; ' \
+        | csvtk add-header -t -n query,tool,time,memory \
+        | csvtk sort -t -k query -k tool \
+        | tee atb.search_time.tsv \
+        | csvtk pretty -t -r 3-
+
+    # hits
+    ls b.*.type.freq \
+        | rush -v 'query={@b\.(.+)\.fasta}' -v 'tool={@fasta\.(\w+)}' \
+            'n=$(csvtk summary -t -f frequency:sum -w 0 {} | cut -f 2 | sed 1d); \
+            h=$(csvtk grep -t -p high   {} | cut -f 2 | sed 1d); \
+            m=$(csvtk grep -t -p medium {} | cut -f 2 | sed 1d); \
+            l=$(csvtk grep -t -p low    {} | cut -f 2 | sed 1d); \
+            echo -e "{query}\t{tool}\t$n\t$h\t$m\t$l" ' \
+        | csvtk add-header -t -n query,tool,sum,high-similarity,medium-similarity,low-similarity \
+        | csvtk sort -t -k query -k tool \
+        | tee atb.search_hits.tsv \
+        | csvtk pretty -t -r 3-
+    
+    csvtk join -t -f 1,2 atb.search_hits.tsv atb.search_time.tsv \
+        | csvtk comma -t -F -f sum,*simi* \
+        | csvtk pretty -t -r 3-
+                    
+    query                     tool              sum   high-similarity   medium-similarity   low-similarity          time     memory
+    -----------------------   --------   ----------   ---------------   -----------------   --------------   -----------   --------
+    amr                       lexicmap   25,563,227         6,693,084           3,814,828       15,055,315   12h:17m:11s   17.68 GB
+    amr                       phylign    11,742,865         5,796,412           2,871,952        3,074,501    2h:36m:08s   85.92 GB
+    gene_E_coli_16S           lexicmap    1,857,974           496,867             556,951          804,156       25m:52s   14.82 GB
+    gene_E_coli_16S           phylign     1,017,766           483,054             434,105          100,607    2h:10m:33s   77.02 GB
+    gene_E_faecalis_SecY      lexicmap       38,062             7,935                  18           30,109        1m:52s    3.77 GB
+    gene_E_faecalis_SecY      phylign         7,937             7,935                   1                1       30m:48s   77.62 GB
+    plasmid_pCUVET18-1784.4   lexicmap      485,295                25               9,201          476,069       31m:31s   15.16 GB
+    plasmid_pCUVET18-1784.4   phylign        46,822                27               9,832           36,963       47m:33s   82.56 GB
+
+## MMseqs2
+
+Indexing
+
+    # The final index would produce a file > 4TB (not supported by our file system)
+    
+    # split the file list into n parts
+    parts=5
+    split -n r/$parts -d files.txt files.txt.n$parts-
+    
+    for f in files.txt.n$parts-*; do
+        echo $f;
+        i=$(echo $f | cut -d "-" -f 2);
+        memusg -t -s "rush -i $f  'zcat {}' -j 12 -k --eta \
+            | mmseqs createdb --shuffle 0 --dbtype 2 stdin mmseqs2-$i" > mmseqs2-$i.log 2>&1;
+    done
+    
+    
+    # performance
+    tail -n 3 mmseqs2-*.log
+    
+    ==> mmseqs2-00.log <==
+    elapsed time: 1h:02m:40s
+    peak rss: 8.22 GB
+
+
+    ==> mmseqs2-01.log <==
+    elapsed time: 1h:02m:31s
+    peak rss: 8.21 GB
+
+
+    ==> mmseqs2-02.log <==
+    elapsed time: 1h:02m:54s
+    peak rss: 8.21 GB
+
+
+    ==> mmseqs2-03.log <==
+    elapsed time: 1h:02m:57s
+    peak rss: 8.21 GB
+
+
+    ==> mmseqs2-04.log <==
+    elapsed time: 1h:02m:55s
+    peak rss: 8.21 GB
+
+    
+    
+    # size
+    ls -l  mmseqs2* | csvtk space2tab | csvtk summary -Ht -f 5:sum -w 0 | csvtk comma -Ht
+    7,551,205,276,989
+
+## Minimap2
+
+Indexing
+
+    parts=5
+    for f in files.txt.n$parts-*; do
+        echo $f;
+        i=$(echo $f | cut -d "-" -f 2);
+        memusg -t -s "rush -i $f 'zcat {}' -j 12 -k --eta \
+            | minimap2 -t 48 -x map-ont -d minimap2-$i.mmi -" > minimap2-$i.mmi.log 2>&1;
+    done
+
+    # performance
+    tail -n 3 minimap2*.mmi.log
+    ==> minimap2-00.mmi.log <==
+    elapsed time: 6h:27m:37s
+    peak rss: 75.49 GB
+
+
+    ==> minimap2-01.mmi.log <==
+    elapsed time: 6h:27m:09s
+    peak rss: 76.46 GB
+
+
+    ==> minimap2-02.mmi.log <==
+    elapsed time: 6h:28m:12s
+    peak rss: 61.06 GB
+
+
+    ==> minimap2-03.mmi.log <==
+    elapsed time: 6h:28m:16s
+    peak rss: 73.21 GB
+
+
+    ==> minimap2-04.mmi.log <==
+    elapsed time: 6h:25m:39s
+    peak rss: 60.36 GB
+
+
+    # size
+    ls -l  minimap2-*.mmi | csvtk space2tab | csvtk summary -Ht -f 5:sum -w 0 | csvtk comma -Ht
+    15,541,500,350,868

@@ -1,0 +1,29 @@
+assembly          ident   qlen                    queries   tool       hits     recall   genome_size
+---------------   -----   ---------------------   -------   --------   ------   ------   -----------
+GCF_000005845.2   80      Query length: 250 bp    295690    Blastn     6886     2.33     4641652    
+GCF_000005845.2   80      Query length: 500 bp    145084    Blastn     8809     6.07     4641652    
+GCF_000005845.2   80      Query length: 1000 bp   46410     Blastn     6293     13.56    4641652    
+GCF_000005845.2   80      Query length: 250 bp    295690    LexicMap   13095    4.43     4641652    
+GCF_000005845.2   80      Query length: 500 bp    145084    LexicMap   25131    17.32    4641652    
+GCF_000005845.2   80      Query length: 1000 bp   46410     LexicMap   15617    33.65    4641652    
+GCF_000005845.2   80      Query length: 250 bp    295690    minimap2   2406     0.81     4641652    
+GCF_000005845.2   80      Query length: 500 bp    145084    minimap2   13298    9.17     4641652    
+GCF_000005845.2   80      Query length: 1000 bp   46410     minimap2   19880    42.84    4641652    
+GCF_000005845.2   83      Query length: 250 bp    295927    Blastn     24881    8.41     4641652    
+GCF_000005845.2   83      Query length: 500 bp    145594    Blastn     29520    20.28    4641652    
+GCF_000005845.2   83      Query length: 1000 bp   46417     Blastn     18742    40.38    4641652    
+GCF_000005845.2   83      Query length: 250 bp    295927    LexicMap   46764    15.80    4641652    
+GCF_000005845.2   83      Query length: 500 bp    145594    LexicMap   56153    38.57    4641652    
+GCF_000005845.2   83      Query length: 1000 bp   46417     LexicMap   30908    66.59    4641652    
+GCF_000005845.2   83      Query length: 250 bp    295927    minimap2   18087    6.11     4641652    
+GCF_000005845.2   83      Query length: 500 bp    145594    minimap2   58738    40.34    4641652    
+GCF_000005845.2   83      Query length: 1000 bp   46417     minimap2   41548    89.51    4641652    
+GCF_000005845.2   87      Query length: 250 bp    301045    Blastn     106810   35.48    4641652    
+GCF_000005845.2   87      Query length: 500 bp    146756    Blastn     95338    64.96    4641652    
+GCF_000005845.2   87      Query length: 1000 bp   46416     Blastn     41760    89.97    4641652    
+GCF_000005845.2   87      Query length: 250 bp    301045    LexicMap   133740   44.43    4641652    
+GCF_000005845.2   87      Query length: 500 bp    146756    LexicMap   109734   74.77    4641652    
+GCF_000005845.2   87      Query length: 1000 bp   46416     LexicMap   44211    95.25    4641652    
+GCF_000005845.2   87      Query length: 250 bp    301045    minimap2   136847   45.46    4641652    
+GCF_000005845.2   87      Query length: 500 bp    146756    minimap2   138707   94.52    4641652    
+GCF_000005845.2   87      Query length: 1000 bp   46416     minimap2   46407    99.98    4641652    

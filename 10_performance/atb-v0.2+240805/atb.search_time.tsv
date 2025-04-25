@@ -1,0 +1,5 @@
+query	tool	time	memory
+amr	lexicmap	1.0days 3h:50m:22s	18.61 GB
+gene_E_coli_16S	lexicmap	49m:36s	17.89 GB
+gene_E_faecalis_SecY	lexicmap	3m:41s	3.86 GB
+plasmid_pCUVET18-1784.4	lexicmap	58m:17s	17.32 GB

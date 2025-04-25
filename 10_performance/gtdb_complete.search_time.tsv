@@ -1,0 +1,21 @@
+query	tool	time	memory
+amr	blastn	1h:18m:06s	442.07 GB
+amr	blastn2	1h:16m:01s	311.93 GB
+amr	lexicmap	2h:23m:40s	10.69 GB
+amr	minimap2	5h:07m:50s	20.22 GB
+amr	mmseqs2	10h:34m:18s	406.87 GB
+gene_E_coli_16S	blastn	45m:60s	378.39 GB
+gene_E_coli_16S	blastn2	54m:51s	378.42 GB
+gene_E_coli_16S	lexicmap	5m:03s	5.19 GB
+gene_E_coli_16S	minimap2	4h:48m:33s	20.22 GB
+gene_E_coli_16S	mmseqs2	8h:39m:00s	400.65 GB
+gene_E_faecalis_SecY	blastn	36m:11s	351.19 GB
+gene_E_faecalis_SecY	blastn2	52m:51s	324.06 GB
+gene_E_faecalis_SecY	lexicmap	29.645s	2.06 GB
+gene_E_faecalis_SecY	minimap2	4h:46m:48s	20.22 GB
+gene_E_faecalis_SecY	mmseqs2	7h:16m:14s	400.66 GB
+plasmid_pCUVET18-1784.4	blastn	37m:42s	364.67 GB
+plasmid_pCUVET18-1784.4	blastn2	51m:22s	142.81 GB
+plasmid_pCUVET18-1784.4	lexicmap	6m:59s	6.77 GB
+plasmid_pCUVET18-1784.4	minimap2	5h:28m:35s	20.22 GB
+plasmid_pCUVET18-1784.4	mmseqs2	12h:25m:10s	400.74 GB

@@ -12,16 +12,16 @@ Indexing
 
     memusg -t -s "lexicmap index -S -X files.txt -O gtdb_repr.lmi --force" > gtdb_repr.lmi.log 2>&1
 
-    elapsed time: 2h:03m:10s
-    peak rss: 127.43 GB
+    elapsed time: 1h:52m:36s
+    peak rss: 105.29 GB
 
-    gtdb_repr.lmi/: 212.48 GB
-     145.69 GB      seeds
-      66.78 GB      genomes
-       2.03 MB      genomes.map.bin
-     312.53 KB      masks.bin
-      329.00 B      info.toml
-
+    gtdb_repr.lmi: 229.00 GB (228,999,914,466)
+     157.29 GB      seeds
+      71.71 GB      genomes
+       2.13 MB      genomes.map.bin
+     160.03 kB      masks.bin
+         613 B      info.toml
+          48 B      genomes.chunks.bin
 
 Searching
 
@@ -194,15 +194,15 @@ Compute the number of genome hits
     # hits with qcovHSP >= 50
     ls b.*.blastn.tsv.with_sgenome.gz \
         | rush -k 'echo -ne "{}\t"; \
-            csvtk filter2 -t -f "\$qcovhsp >= 50" {} \
+            csvtk filter2 -t -f "\$length / \$qlen * 100 >= 50" {} \
                 | csvtk uniq -t -f qseqid,sgenome | csvtk nrow -t' \
         | csvtk pretty -Ht -r 2
 
-    b.amr.fasta.blastn.tsv.with_sgenome.gz                       30695
-    b.gene_E_coli_16S.fasta.blastn.tsv.with_sgenome.gz           34375
+    b.amr.fasta.blastn.tsv.with_sgenome.gz                       30744
+    b.gene_E_coli_16S.fasta.blastn.tsv.with_sgenome.gz           34410
     b.gene_E_faecalis_SecY.fasta.blastn.tsv.with_sgenome.gz         70
     b.plasmid_pCUVET18-1784.4.fasta.blastn.tsv.with_sgenome.gz       0
-
+    
 ### MMseqs2
 
 Indexing
