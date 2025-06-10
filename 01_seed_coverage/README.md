@@ -174,9 +174,12 @@ kmc requires single-line fasta format ...
     # number of k-mers
     time kmc_tools transform $name dump /dev/stdout | wc -l
 
-gtdb_repr     : 242,928,092,491 (   85,205 genomes)
-gtdb_complete : 292,087,847,711 (  402,538 genomes)
-atb_hq        :  59,449,535,089 (1,858,610 genomes)
+No. of unique k-mers
+
+    gtdb_repr     : 242,928,092,491 (   85,205 genomes)
+    gtdb_complete : 292,087,847,711 (  402,538 genomes)
+        e.coli    :     473,069,805 (   33,851 genomes) 
+    atb_hq        :  59,449,535,089 (1,858,610 genomes)
 
 unikmer
 

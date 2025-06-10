@@ -290,7 +290,8 @@ Counting
     csvtk join -t -f 1,2 atb.search_hits.tsv atb.search_time.tsv \
         | csvtk comma -t -F -f sum,*simi* \
         | csvtk pretty -t -r 3-
-                    
+    
+    # v0.7.0, 2025-04-09
     query                     tool              sum   high-similarity   medium-similarity   low-similarity          time     memory
     -----------------------   --------   ----------   ---------------   -----------------   --------------   -----------   --------
     amr                       lexicmap   25,563,227         6,693,084           3,814,828       15,055,315   12h:17m:11s   17.68 GB
@@ -301,6 +302,19 @@ Counting
     gene_E_faecalis_SecY      phylign         7,937             7,935                   1                1       30m:48s   77.62 GB
     plasmid_pCUVET18-1784.4   lexicmap      485,295                25               9,201          476,069       31m:31s   15.16 GB
     plasmid_pCUVET18-1784.4   phylign        46,822                27               9,832           36,963       47m:33s   82.56 GB
+    
+    # v0.7.1, 2025-05-19
+    query                     tool              sum   high-similarity   medium-similarity   low-similarity         time     memory
+    -----------------------   --------   ----------   ---------------   -----------------   --------------   ----------   --------
+    amr                       lexicmap   25,563,202         6,693,084           3,814,828       15,055,290   4h:36m:03s   19.42 GB  big difference
+    amr                       phylign    11,742,865         5,796,412           2,871,952        3,074,501   2h:36m:08s   85.92 GB
+    gene_E_coli_16S           lexicmap    1,857,974           496,867             556,951          804,156      15m:13s   13.67 GB
+    gene_E_coli_16S           phylign     1,017,766           483,054             434,105          100,607   2h:10m:33s   77.02 GB
+    gene_E_faecalis_SecY      lexicmap       38,062             7,935                  18           30,109       1m:22s    3.06 GB
+    gene_E_faecalis_SecY      phylign         7,937             7,935                   1                1      30m:48s   77.62 GB
+    plasmid_pCUVET18-1784.4   lexicmap      485,274                25               9,201          476,048      19m:22s    11.9 GB
+    plasmid_pCUVET18-1784.4   phylign        46,822                27               9,832           36,963      47m:33s   82.56 GB
+
 
 ## MMseqs2
 

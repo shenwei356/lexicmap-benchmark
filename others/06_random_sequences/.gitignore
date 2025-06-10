@@ -1,0 +1,7 @@
+.directory
+.Rhistory
+.brename_detail.txt
+
+*.lmi
+*.lexicmap.tsv.gz
+

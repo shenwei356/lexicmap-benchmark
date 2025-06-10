@@ -1,0 +1,21 @@
+13:08:48.465 [INFO] LexicMap v0.7.1
+13:08:48.465 [INFO]   https://github.com/shenwei356/LexicMap
+13:08:48.465 [INFO] 
+13:08:48.465 [INFO] checking input files ...
+13:08:48.465 [INFO]   no files given, reading from stdin
+13:08:48.465 [INFO] 
+13:08:48.465 [INFO] loading index: refs/s10.fa.gz.lmi
+13:08:48.465 [INFO]   reading masks...
+13:08:48.468 [INFO]   reading indexes of seeds (k-mer-value) data...
+13:08:49.474 [INFO]   creating reader pools for 1 genome batches, each with 16 readers...
+13:08:49.475 [INFO] index loaded in 1.009708973s
+13:08:49.475 [INFO] 
+13:08:49.475 [INFO] searching with 16 threads...
+13:08:57.955 [INFO] 
+13:08:57.955 [INFO] processed queries: 24998, speed: 176877.377 queries per minute
+13:08:57.955 [INFO] 100.0000% (24998/24998) queries matched
+13:08:57.955 [INFO] done searching
+13:08:57.955 [INFO] search results saved to: refs/s10.fa.gz.lexicmap.tsv.gz
+13:08:57.955 [INFO] 
+13:08:57.955 [INFO] elapsed time: 9.490317531s
+13:08:57.955 [INFO] 
