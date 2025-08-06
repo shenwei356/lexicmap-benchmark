@@ -26,6 +26,7 @@ t <- theme_bw() +
     strip.text.y = element_text(size = 12),
     
     legend.text = element_text(size = 11),
+    legend.title = element_text(margin = margin(b = 1)),
     # legend.position = "right",
     legend.background = element_rect(fill = "transparent"),
     # legend.key.size = unit(0.6, "cm"),
@@ -57,6 +58,7 @@ df2 <- read.csv(infile2, sep = "\t")
 #   arrange(desc(index_size))
 
 df$tool <- factor(df$tool, levels = unique(df2$tool), ordered = TRUE)
+df2$tool <- factor(df2$tool, levels = unique(df2$tool), ordered = TRUE)
 
 colors <- colorblind_pal()(8)
 
@@ -65,6 +67,9 @@ tools2 <- unique(df2$tool)
 colors2 <- colors[1:length(tools2)]
 dfc <- data.frame(tool = tools2, color = colors2 )
 colors1 <- dfc %>% filter(tool %in% tools1) %>% select(color) %>% unlist() %>% unname()
+
+print(tools1)
+print(tools2)
 
 
 df$task <- rep("Indexing", each=nrow(df))

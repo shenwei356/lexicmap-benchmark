@@ -29,8 +29,8 @@ p <-
     # color = genome_size/1000000,
   )) +
   
-  geom_quasirandom(dodge.width = 0.1, size = 0.8) +
   geom_vline(xintercept = c(85,90,95), linewidth = 0.3, linetype=2, color = "grey70") + 
+  geom_quasirandom(dodge.width = 0.1, size = 0.8) +
   #geom_hline(yintercept = c(90,95), linewidth = 0.3, linetype=2, color = "grey70") +
   # scale_color_stata() +
   # scale_color_colorblind() +
@@ -70,9 +70,11 @@ p <- p +
     strip.text.y = element_text(size = 11),
     
     legend.text = element_text(size = 11),
+    legend.title = element_blank(),
+    legend.margin = margin(t = 0, r = 0, b = 0, l = 0),
     # legend.position = "right",
-    legend.position = c(0.91, 0.2),
-    legend.background = element_rect(fill = "transparent"),
+    legend.position = c(0.90, 0.17),
+    legend.background = element_rect(fill = "white"),
     # legend.key.size = unit(0.6, "cm"),
     # legend.key = element_blank(),
     legend.text.align = 0,
